@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import { hubs, labelForPath, pageByPath, type ResourcePage as ResourcePageType } from '../lib/content';
+
+interface Props { page: ResourcePageType }
+const { page } = Astro.props;
+const hub = page.section ? hubs[page.section] : undefined;
+const hubPath = page.section ? `/${page.section}` : undefined;
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  ...(hub && hubPath ? [{ name: hub.title, href: hubPath }] : []),
+  { name: page.title, href: page.path }
+];
+const canonical = new URL(page.path, Astro.site).href;
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': page.section ? 'Article' : 'WebPage',
+    ...(page.section ? { headline: page.title } : { name: page.title }),
+    description: page.description,
+    mainEntityOfPage: canonical,
+    dateModified: '2026-08-12',
+    author: { '@type': 'Organization', name: 'Bend Home Resources', url: 'https://bendhomeresources.com/about' },
+    publisher: { '@type': 'Organization', name: 'Bend Home Resources', url: 'https://bendhomeresources.com/' }
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((item, index) => ({
+      '@type': 'ListItem', position: index + 1, name: item.name,
+      item: new URL(item.href, Astro.site).href
+    }))
+  }
+];
+const toc = page.sections.map((section, index) => ({ id: `section-${index + 1}`, label: section.heading }));
+const related = page.related.map((path) => ({ path, label: labelForPath(path), page: pageByPath(path) }));
+---
+<BaseLayout title={page.seoTitle} description={page.description} type={page.section ? 'article' : 'website'} schema={schema}>
+  <div class="container"><Breadcrumbs items={breadcrumbs} /></div>
+  <section class="article-hero">
+    <div class="narrow">
+      <p class="eyebrow">{hub?.eyebrow ?? 'Bend Home Resources'}</p>
+      <h1>{page.title}</h1>
+      <p class="lead">{page.intro}</p>
+      <p class="reviewed">Last reviewed: {page.lastReviewed}</p>
+    </div>
+  </section>
+
+  <section class="section article-section">
+    <div class="container article-shell">
+      <article class="prose">
+        {page.sections.map((section, index) => (
+          <section id={`section-${index + 1}`}>
+            <h2>{section.heading}</h2>
+            {section.paragraphs?.map((paragraph) => <p>{paragraph}</p>)}
+            {section.bullets && <ul>{section.bullets.map((item) => <li>{item}</li>)}</ul>}
+            {section.numbered && <ol>{section.numbered.map((item) => <li>{item}</li>)}</ol>}
+            {section.callout && <div class="callout"><p>{section.callout}</p></div>}
+          </section>
+        ))}
+
+        {page.faqs.length > 0 && (
+          <section class="faq" id="questions">
+            <h2>Common questions</h2>
+            {page.faqs.map((item) => (
+              <details>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </section>
+        )}
+
+        {page.sources.length > 0 && (
+          <section class="source-list" id="sources">
+            <h2>Official sources & further research</h2>
+            <p>For rules, licensing and local programs, use the current primary source before making a decision.</p>
+            <ul>
+              {page.sources.map((source) => <li><a href={source.url} rel="noopener noreferrer">{source.name}</a></li>)}
+            </ul>
+          </section>
+        )}
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="card toc-card">
+          <strong>On this page</strong>
+          {toc.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
+          {page.faqs.length > 0 && <a href="#questions">Common questions</a>}
+          {page.sources.length > 0 && <a href="#sources">Official sources</a>}
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section-sm related-band">
+      <div class="container">
+        <p class="eyebrow">Keep researching</p>
+        <h2>Related Bend home resources</h2>
+        <div class="grid grid-3 related-grid">
+          {related.map((item) => (
+            <a class="card card-link" href={item.path}>
+              <h3>{item.label}</h3>
+              <p>{item.page?.description ?? 'Continue to the related Bend Home Resources guide.'}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</BaseLayout>

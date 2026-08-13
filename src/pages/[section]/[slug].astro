@@ -1,0 +1,14 @@
+---
+import ResourcePage from '../../../components/ResourcePage.astro';
+import { pages } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return pages.map((page) => ({
+    params: { section: page.section, slug: page.slug },
+    props: { page }
+  }));
+}
+
+const { page } = Astro.props;
+---
+<ResourcePage page={page} />

@@ -1,0 +1,17 @@
+{
+  "name": "bend-home-resources",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "npm run validate:content && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "validate:content": "node scripts/validate-content.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.1"
+  }
+}

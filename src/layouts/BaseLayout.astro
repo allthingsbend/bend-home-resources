@@ -1,0 +1,71 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  type?: 'website' | 'article';
+  schema?: Record<string, any> | Record<string, any>[];
+  noindex?: boolean;
+}
+
+const { title, description, type = 'website', schema, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const socialImage = new URL('/og-default.png', Astro.site);
+const gaId = import.meta.env.PUBLIC_GA_ID;
+const gscVerification = import.meta.env.PUBLIC_GSC_VERIFICATION;
+const bingVerification = import.meta.env.PUBLIC_BING_VERIFICATION;
+const defaultSchema = {
+  '@context': 'https://schema.org', '@type': 'WebPage', name: title, description, url: canonical.href,
+  isPartOf: { '@type': 'WebSite', name: 'Bend Home Resources', url: 'https://bendhomeresources.com/' },
+  publisher: { '@type': 'Organization', name: 'Bend Home Resources', url: 'https://bendhomeresources.com/' }
+};
+const schemaPayload = schema ?? defaultSchema;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#173d31" />
+    {gscVerification && <meta name="google-site-verification" content={gscVerification} />}
+    {bingVerification && <meta name="msvalidate.01" content={bingVerification} />}
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Bend Home Resources" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={socialImage.href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage.href} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(schemaPayload)}></script>
+    {gaId && <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>}
+    {gaId && (
+      <script is:inline define:vars={{ gaId }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', gaId);
+      </script>
+    )}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main"><slot /></main>
+    <Footer />
+  </body>
+</html>

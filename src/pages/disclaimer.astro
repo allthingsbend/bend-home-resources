@@ -1,0 +1,7 @@
+---
+import ResourcePage from '../components/ResourcePage.astro';
+import { trustPages } from '../lib/content';
+const page = trustPages.find((item) => item.slug === 'disclaimer');
+if (!page) throw new Error('Missing content for disclaimer');
+---
+<ResourcePage page={page} />

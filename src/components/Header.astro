@@ -1,0 +1,29 @@
+---
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const nav = [
+  { href: '/buying', label: 'Buy a Home' },
+  { href: '/professionals', label: 'Find Pros' },
+  { href: '/costs', label: 'Costs' },
+  { href: '/neighborhoods', label: 'Neighborhoods' },
+  { href: '/homeownership', label: 'Homeownership' },
+  { href: '/tools', label: 'Tools' }
+];
+const active = (href: string) => currentPath === href || currentPath.startsWith(`${href}/`);
+---
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="Bend Home Resources home">
+      <span class="brand-mark" aria-hidden="true">BHR</span>
+      <span>Bend Home Resources</span>
+    </a>
+    <nav class="nav" aria-label="Primary navigation">
+      {nav.map((item) => <a href={item.href} aria-current={active(item.href) ? 'page' : undefined}>{item.label}</a>)}
+    </nav>
+    <details class="mobile-nav">
+      <summary>Menu</summary>
+      <div class="mobile-panel">
+        {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+      </div>
+    </details>
+  </div>
+</header>

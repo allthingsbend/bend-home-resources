@@ -1,0 +1,12 @@
+---
+import HubPage from '../../components/HubPage.astro';
+import { hubs } from '../../lib/content';
+
+export function getStaticPaths() {
+  return Object.keys(hubs).map((section) => ({ params: { section }, props: { section } }));
+}
+
+interface Props { section: string }
+const { section } = Astro.props;
+---
+<HubPage section={section} />

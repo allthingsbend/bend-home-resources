@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import { hubs, pagesForSection } from '../lib/content';
+
+interface Props { section: string }
+const { section } = Astro.props;
+const hub = hubs[section];
+const children = pagesForSection(section);
+const featured = hub.featured.map((slug) => children.find((page) => page.slug === slug)).filter(Boolean);
+const others = children.filter((page) => !hub.featured.includes(page.slug));
+const canonical = new URL(`/${section}`, Astro.site).href;
+const breadcrumbs = [{ name: 'Home', href: '/' }, { name: hub.title, href: `/${section}` }];
+const schema = [
+  {
+    '@context': 'https://schema.org', '@type': 'CollectionPage', name: hub.title,
+    description: hub.description, url: canonical,
+    hasPart: children.map((page) => ({ '@type': 'WebPage', name: page.title, url: new URL(page.path, Astro.site).href }))
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, item: new URL(item.href, Astro.site).href }))
+  }
+];
+---
+<BaseLayout title={hub.seoTitle} description={hub.description} schema={schema}>
+  <div class="container"><Breadcrumbs items={breadcrumbs} /></div>
+  <section class="hub-hero">
+    <div class="container">
+      <p class="eyebrow">{hub.eyebrow}</p>
+      <h1>{hub.title}</h1>
+      <p class="lead">{hub.intro}</p>
+    </div>
+  </section>
+
+  <section class="section-sm">
+    <div class="container">
+      <p class="eyebrow">Start here</p>
+      <div class="grid grid-2 hub-featured">
+        {featured.map((page) => page && (
+          <a class="card card-link feature-card" href={page.path}>
+            <span class="card-kicker">Guide</span>
+            <h2>{page.title}</h2>
+            <p>{page.description}</p>
+            <span class="text-link">Read guide →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {others.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">More in this section</p>
+        <h2>Explore all {hub.title.toLowerCase()}</h2>
+        <div class="grid grid-3">
+          {others.map((page) => (
+            <a class="card card-link" href={page.path}>
+              <h3>{page.title}</h3>
+              <p>{page.description}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section band">
+    <div class="container grid grid-2">
+      <div><p class="eyebrow">How we approach this</p><h2>Useful first. Search-friendly second.</h2></div>
+      <div><p>Each page is designed around a distinct user decision, with clear internal links to the next question. We use local and state primary sources where rules or licensing matter, and we avoid publishing fake precision when the local data does not exist yet.</p></div>
+    </div>
+  </section>
+</BaseLayout>

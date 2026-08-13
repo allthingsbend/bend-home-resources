@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { hubs, pages, pageByPath } from '../lib/content';
+
+const title = 'Bend Home Resources | Buying, Owning & Maintaining a Home in Bend';
+const description = 'Independent Bend, Oregon home resources for buyers and homeowners: buying guides, local professionals, repair costs, neighborhoods, maintenance and tools.';
+const hubOrder = ['buying','professionals','costs','neighborhoods','homeownership','tools'];
+const hubCards = hubOrder.map((key) => ({ key, ...hubs[key] }));
+const featuredPaths = [
+  '/buying/home-buying-process',
+  '/buying/home-inspections',
+  '/professionals/home-inspectors',
+  '/professionals/general-contractors',
+  '/homeownership/maintenance-calendar',
+  '/tools/home-buying-checklist'
+];
+const featured = featuredPaths.map((path) => pageByPath(path)).filter(Boolean);
+const schema = [
+  {
+    '@context': 'https://schema.org', '@type': 'WebSite', name: 'Bend Home Resources',
+    url: 'https://bendhomeresources.com/', description,
+    publisher: { '@type': 'Organization', name: 'Bend Home Resources', url: 'https://bendhomeresources.com/' }
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'Organization', name: 'Bend Home Resources',
+    url: 'https://bendhomeresources.com/', description: 'Independent educational resources for buying and owning a home in Bend, Oregon.'
+  }
+];
+---
+<BaseLayout title={title} description={description} schema={schema}>
+  <section class="hero home-hero">
+    <div class="container home-hero-grid">
+      <div>
+        <p class="eyebrow">The independent Bend home guide</p>
+        <h1>Buy the house. Understand it. Own it better.</h1>
+        <p class="lead">Practical Bend, Oregon resources for the entire home journey—from financing and inspections to contractors, repair costs, neighborhoods, winterization and wildfire preparation.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="/buying">Start buying a home</a>
+          <a class="btn btn-secondary" href="/professionals">Find home professionals</a>
+        </div>
+      </div>
+      <div class="hero-panel" aria-label="Site coverage">
+        <span class="hero-panel-label">One local resource</span>
+        <div class="hero-stat"><strong>6</strong><span>major homeownership pillars</span></div>
+        <div class="hero-stat"><strong>{pages.length}</strong><span>launch guides & tools</span></div>
+        <div class="hero-stat"><strong>Bend</strong><span>focused from day one</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm intro-strip">
+    <div class="container grid grid-3">
+      <div><p class="eyebrow">Before closing</p><h3>Make the purchase make sense</h3><p>Budget, representation, offers, inspections, property records, insurance and closing.</p></div>
+      <div><p class="eyebrow">When something comes up</p><h3>Know who to call</h3><p>Inspectors, contractors, lenders, roofers, plumbers and other specialists—with guidance on how to compare them.</p></div>
+      <div><p class="eyebrow">After the keys</p><h3>Own for the long haul</h3><p>Repair costs, seasonal maintenance, drainage, wildfire preparation and neighborhood-specific ownership research.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">The site structure</p>
+      <h2>Everything connects back to six useful hubs.</h2>
+      <p class="lead">Instead of hundreds of disconnected keyword pages, Bend Home Resources is organized around the real decisions buyers and homeowners make.</p>
+      <div class="grid grid-3 pillar-grid">
+        {hubCards.map((hub) => (
+          <a class="card card-link pillar-card" href={`/${hub.key}`}>
+            <span class="pillar-number">0{hubOrder.indexOf(hub.key) + 1}</span>
+            <h3>{hub.title}</h3>
+            <p>{hub.description}</p>
+            <span class="text-link">Explore {hub.key} →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="container grid grid-2">
+      <div>
+        <p class="eyebrow">Built for Bend</p>
+        <h2>Local questions deserve local research.</h2>
+      </div>
+      <div>
+        <p>Home Energy Scores, Oregon buyer-representation rules, CCB licensing, Deschutes County property data, Bend permitting, wildfire preparation and local maintenance conditions all matter more than generic national advice.</p>
+        <p>When rules or credentials matter, our guides point readers back to the current government source.</p>
+        <a class="text-link light-link" href="/editorial-standards">Read our editorial standards →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Popular starting points</p>
+      <h2>Useful resources for the decisions that happen first.</h2>
+      <div class="grid grid-3">
+        {featured.map((page) => page && (
+          <a class="card card-link" href={page.path}>
+            <h3>{page.title}</h3>
+            <p>{page.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section home-data-section">
+    <div class="container data-callout">
+      <div>
+        <p class="eyebrow">Where this is going</p>
+        <h2>Original Bend data, not fake local averages.</h2>
+        <p class="lead">As the site grows, the cost section is designed to collect real local quotes and project scope so readers can see what Bend homeowners were actually quoted—not a national estimate with a Bend label added.</p>
+      </div>
+      <div class="data-list">
+        <span>Repair-cost database</span><span>Contractor comparison tables</span><span>Neighborhood buyer research</span><span>Home-maintenance tools</span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
