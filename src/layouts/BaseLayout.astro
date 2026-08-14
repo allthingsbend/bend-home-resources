@@ -14,31 +14,73 @@ interface Props {
 const { title, description, type = 'website', schema, noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL('/og-default.png', Astro.site);
-const gaId = import.meta.env.PUBLIC_GA_ID;
 const gscVerification = import.meta.env.PUBLIC_GSC_VERIFICATION;
 const bingVerification = import.meta.env.PUBLIC_BING_VERIFICATION;
+
 const defaultSchema = {
-  '@context': 'https://schema.org', '@type': 'WebPage', name: title, description, url: canonical.href,
-  isPartOf: { '@type': 'WebSite', name: 'Bend Home Resources', url: 'https://bendhomeresources.com/' },
-  publisher: { '@type': 'Organization', name: 'Bend Home Resources', url: 'https://bendhomeresources.com/' }
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: title,
+  description,
+  url: canonical.href,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'Bend Home Resources',
+    url: 'https://bendhomeresources.com/'
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Bend Home Resources',
+    url: 'https://bendhomeresources.com/'
+  }
 };
+
 const schemaPayload = schema ?? defaultSchema;
 ---
+
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Google Tag Manager -->
+    <script is:inline>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-5WBDSRHG');
+    </script>
+    <!-- End Google Tag Manager -->
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
+    <meta
+      name="robots"
+      content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'}
+    />
+
     <link rel="canonical" href={canonical.href} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
+
     <meta name="theme-color" content="#173d31" />
-    {gscVerification && <meta name="google-site-verification" content={gscVerification} />}
-    {bingVerification && <meta name="msvalidate.01" content={bingVerification} />}
+
+    {gscVerification && (
+      <meta
+        name="google-site-verification"
+        content={gscVerification}
+      />
+    )}
+
+    {bingVerification && (
+      <meta
+        name="msvalidate.01"
+        content={bingVerification}
+      />
+    )}
 
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="Bend Home Resources" />
@@ -46,26 +88,38 @@ const schemaPayload = schema ?? defaultSchema;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical.href} />
     <meta property="og:image" content={socialImage.href} />
+
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage.href} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(schemaPayload)}></script>
-    {gaId && <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>}
-    {gaId && (
-      <script is:inline define:vars={{ gaId }}>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', gaId);
-      </script>
-    )}
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(schemaPayload)}
+    ></script>
   </head>
+
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-5WBDSRHG"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden">
+      </iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
     <a class="skip-link" href="#main">Skip to content</a>
+
     <Header />
-    <main id="main"><slot /></main>
+
+    <main id="main">
+      <slot />
+    </main>
+
     <Footer />
   </body>
 </html>
