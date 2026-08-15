@@ -1,7 +1,8 @@
 ---
 import ResourcePage from '../components/ResourcePage.astro';
-import { trustPages } from '../lib/content';
-const page = trustPages.find((item) => item.slug === 'editorial-standards');
-if (!page) throw new Error('Missing content for editorial-standards');
+import { getTrustPages } from '../lib/content';
+const pages = await getTrustPages();
+const entry = pages.find((item) => item.data.slug === 'editorial-standards');
+if (!entry) throw new Error('Missing content for editorial-standards');
 ---
-<ResourcePage page={page} />
+<ResourcePage entry={entry} />

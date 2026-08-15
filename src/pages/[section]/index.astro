@@ -1,9 +1,10 @@
 ---
 import HubPage from '../../components/HubPage.astro';
-import { hubs } from '../../lib/content';
+import { getHubEntries } from '../../lib/content';
 
-export function getStaticPaths() {
-  return Object.keys(hubs).map((section) => ({ params: { section }, props: { section } }));
+export async function getStaticPaths() {
+  const hubs = await getHubEntries();
+  return hubs.map((hub) => ({ params: { section: hub.id }, props: { section: hub.id } }));
 }
 
 interface Props { section: string }

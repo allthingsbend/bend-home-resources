@@ -103,18 +103,31 @@ For Cloudflare production values, add the variables in the Pages project setting
 
 ## How content works
 
-Most of the site copy lives in:
+Each guide now has its own Markdown file. Article copy and page-specific SEO fields live together in:
 
-`src/data/content.json`
+```text
+src/content/resources/
+├── buying/
+├── professionals/
+├── costs/
+├── neighborhoods/
+├── homeownership/
+├── tools/
+└── _trust/
+```
 
-Reusable route templates generate the final pages from that data:
+Each hub page has its own small JSON data file in `src/content/hubs/`. The homepage remains `src/pages/index.astro` because it is a custom landing page rather than a standard guide.
+
+Astro Content Collections load these files at build time. The reusable route templates still generate the same static URLs:
 
 ```text
 src/pages/[section]/index.astro
 src/pages/[section]/[slug].astro
 ```
 
-That keeps the rendered site fully static while making expansion much easier. To add a future professional or cost guide, add the content record and it automatically uses the same page layout, metadata pattern, breadcrumb structure and related-content system.
+To update an existing guide, edit its matching `.md` file. To add a new guide, copy a similar Markdown file into the correct section folder, change its frontmatter and content, and give it a unique `slug` and `path`. The site remains fully static and the existing URLs are unchanged.
+
+See `docs/CONTENT-EDITING.md` for the simple editing workflow.
 
 ## Editorial roadmap
 

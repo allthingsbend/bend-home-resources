@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { hubs, pages, pageByPath } from '../lib/content';
+import { getHubs, getPages, pageByPath } from '../lib/content';
 
 const title = 'Bend Home Resources | Buying, Owning & Maintaining a Home in Bend';
 const description = 'Independent Bend, Oregon home resources for buyers and homeowners: buying guides, local professionals, repair costs, neighborhoods, maintenance and tools.';
 const hubOrder = ['buying','professionals','costs','neighborhoods','homeownership','tools'];
+const [hubs, pages] = await Promise.all([getHubs(), getPages()]);
 const hubCards = hubOrder.map((key) => ({ key, ...hubs[key] }));
 const featuredPaths = [
   '/buying/home-buying-process',
@@ -14,7 +15,7 @@ const featuredPaths = [
   '/homeownership/maintenance-calendar',
   '/tools/home-buying-checklist'
 ];
-const featured = featuredPaths.map((path) => pageByPath(path)).filter(Boolean);
+const featured = featuredPaths.map((path) => pageByPath(pages, path)).filter(Boolean);
 const schema = [
   {
     '@context': 'https://schema.org', '@type': 'WebSite', name: 'Bend Home Resources',
@@ -93,10 +94,10 @@ const schema = [
       <p class="eyebrow">Popular starting points</p>
       <h2>Useful resources for the decisions that happen first.</h2>
       <div class="grid grid-3">
-        {featured.map((page) => page && (
-          <a class="card card-link" href={page.path}>
-            <h3>{page.title}</h3>
-            <p>{page.description}</p>
+        {featured.map((entry) => entry && (
+          <a class="card card-link" href={entry.data.path}>
+            <h3>{entry.data.title}</h3>
+            <p>{entry.data.description}</p>
           </a>
         ))}
       </div>

@@ -1,14 +1,15 @@
 ---
 import ResourcePage from '../../components/ResourcePage.astro';
-import { pages } from '../../lib/content';
+import { getPages } from '../../lib/content';
 
-export function getStaticPaths() {
-  return pages.map((page) => ({
-    params: { section: page.section, slug: page.slug },
-    props: { page }
+export async function getStaticPaths() {
+  const pages = await getPages();
+  return pages.map((entry) => ({
+    params: { section: entry.data.section as string, slug: entry.data.slug },
+    props: { entry }
   }));
 }
 
-const { page } = Astro.props;
+const { entry } = Astro.props;
 ---
-<ResourcePage page={page} />
+<ResourcePage entry={entry} />

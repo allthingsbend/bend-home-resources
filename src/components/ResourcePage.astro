@@ -1,10 +1,17 @@
 ---
+import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from './Breadcrumbs.astro';
-import { hubs, labelForPath, pageByPath, type ResourcePage as ResourcePageType } from '../lib/content';
+import { getAllResourceEntries, getHubs, labelForPath, pageByPath } from '../lib/content';
 
-interface Props { page: ResourcePageType }
-const { page } = Astro.props;
+interface Props { entry: CollectionEntry<'resources'> }
+const { entry } = Astro.props;
+const page = entry.data;
+const [{ Content, headings }, hubs, allEntries] = await Promise.all([
+  render(entry),
+  getHubs(),
+  getAllResourceEntries(),
+]);
 const hub = page.section ? hubs[page.section] : undefined;
 const hubPath = page.section ? `/${page.section}` : undefined;
 const breadcrumbs = [
@@ -33,8 +40,14 @@ const schema = [
     }))
   }
 ];
-const toc = page.sections.map((section, index) => ({ id: `section-${index + 1}`, label: section.heading }));
-const related = page.related.map((path) => ({ path, label: labelForPath(path), page: pageByPath(path) }));
+const toc = headings
+  .filter((heading) => heading.depth === 2)
+  .map((heading) => ({ id: heading.slug, label: heading.text }));
+const related = page.related.map((path) => ({
+  path,
+  label: labelForPath(path, allEntries, hubs),
+  entry: pageByPath(allEntries, path),
+}));
 ---
 <BaseLayout title={page.seoTitle} description={page.description} type={page.section ? 'article' : 'website'} schema={schema}>
   <div class="container"><Breadcrumbs items={breadcrumbs} /></div>
@@ -50,15 +63,7 @@ const related = page.related.map((path) => ({ path, label: labelForPath(path), p
   <section class="section article-section">
     <div class="container article-shell">
       <article class="prose">
-        {page.sections.map((section, index) => (
-          <section id={`section-${index + 1}`}>
-            <h2>{section.heading}</h2>
-            {section.paragraphs?.map((paragraph) => <p>{paragraph}</p>)}
-            {section.bullets && <ul>{section.bullets.map((item) => <li>{item}</li>)}</ul>}
-            {section.numbered && <ol>{section.numbered.map((item) => <li>{item}</li>)}</ol>}
-            {section.callout && <div class="callout"><p>{section.callout}</p></div>}
-          </section>
-        ))}
+        <Content />
 
         {page.faqs.length > 0 && (
           <section class="faq" id="questions">
@@ -103,7 +108,7 @@ const related = page.related.map((path) => ({ path, label: labelForPath(path), p
           {related.map((item) => (
             <a class="card card-link" href={item.path}>
               <h3>{item.label}</h3>
-              <p>{item.page?.description ?? 'Continue to the related Bend Home Resources guide.'}</p>
+              <p>{item.entry?.data.description ?? 'Continue to the related Bend Home Resources guide.'}</p>
             </a>
           ))}
         </div>

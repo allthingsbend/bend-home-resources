@@ -1,21 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from './Breadcrumbs.astro';
-import { hubs, pagesForSection } from '../lib/content';
+import { getHubs, pagesForSection } from '../lib/content';
 
 interface Props { section: string }
 const { section } = Astro.props;
+const hubs = await getHubs();
 const hub = hubs[section];
-const children = pagesForSection(section);
-const featured = hub.featured.map((slug) => children.find((page) => page.slug === slug)).filter(Boolean);
-const others = children.filter((page) => !hub.featured.includes(page.slug));
+if (!hub) throw new Error(`Missing hub content for ${section}`);
+const children = await pagesForSection(section);
+const featured = hub.featured.map((slug) => children.find((entry) => entry.data.slug === slug)).filter(Boolean);
+const others = children.filter((entry) => !hub.featured.includes(entry.data.slug));
 const canonical = new URL(`/${section}`, Astro.site).href;
 const breadcrumbs = [{ name: 'Home', href: '/' }, { name: hub.title, href: `/${section}` }];
 const schema = [
   {
     '@context': 'https://schema.org', '@type': 'CollectionPage', name: hub.title,
     description: hub.description, url: canonical,
-    hasPart: children.map((page) => ({ '@type': 'WebPage', name: page.title, url: new URL(page.path, Astro.site).href }))
+    hasPart: children.map((entry) => ({ '@type': 'WebPage', name: entry.data.title, url: new URL(entry.data.path, Astro.site).href }))
   },
   {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
@@ -37,11 +39,11 @@ const schema = [
     <div class="container">
       <p class="eyebrow">Start here</p>
       <div class="grid grid-2 hub-featured">
-        {featured.map((page) => page && (
-          <a class="card card-link feature-card" href={page.path}>
+        {featured.map((entry) => entry && (
+          <a class="card card-link feature-card" href={entry.data.path}>
             <span class="card-kicker">Guide</span>
-            <h2>{page.title}</h2>
-            <p>{page.description}</p>
+            <h2>{entry.data.title}</h2>
+            <p>{entry.data.description}</p>
             <span class="text-link">Read guide →</span>
           </a>
         ))}
@@ -55,10 +57,10 @@ const schema = [
         <p class="eyebrow">More in this section</p>
         <h2>Explore all {hub.title.toLowerCase()}</h2>
         <div class="grid grid-3">
-          {others.map((page) => (
-            <a class="card card-link" href={page.path}>
-              <h3>{page.title}</h3>
-              <p>{page.description}</p>
+          {others.map((entry) => (
+            <a class="card card-link" href={entry.data.path}>
+              <h3>{entry.data.title}</h3>
+              <p>{entry.data.description}</p>
             </a>
           ))}
         </div>

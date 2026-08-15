@@ -1,7 +1,8 @@
 ---
 import ResourcePage from '../components/ResourcePage.astro';
-import { trustPages } from '../lib/content';
-const page = trustPages.find((item) => item.slug === 'about');
-if (!page) throw new Error('Missing content for about');
+import { getTrustPages } from '../lib/content';
+const pages = await getTrustPages();
+const entry = pages.find((item) => item.data.slug === 'about');
+if (!entry) throw new Error('Missing content for about');
 ---
-<ResourcePage page={page} />
+<ResourcePage entry={entry} />
