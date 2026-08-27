@@ -27,7 +27,7 @@ const schema = [
     ...(page.section ? { headline: page.title } : { name: page.title }),
     description: page.description,
     mainEntityOfPage: canonical,
-    dateModified: '2026-08-12',
+    dateModified: page.lastModified ?? '2026-08-12',
     author: { '@type': 'Organization', name: 'Bend Home Resources', url: 'https://bendhomeresources.com/about' },
     publisher: { '@type': 'Organization', name: 'Bend Home Resources', url: 'https://bendhomeresources.com/' }
   },
@@ -38,7 +38,16 @@ const schema = [
       '@type': 'ListItem', position: index + 1, name: item.name,
       item: new URL(item.href, Astro.site).href
     }))
-  }
+  },
+  ...(page.faqs.length > 0 ? [{
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: page.faqs.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer }
+    }))
+  }] : [])
 ];
 const toc = headings
   .filter((heading) => heading.depth === 2)

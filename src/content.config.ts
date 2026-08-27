@@ -26,6 +26,7 @@ const resources = defineCollection({
     related: z.array(z.string()).default([]),
     sources: z.array(sourceSchema).default([]),
     lastReviewed: z.string(),
+    lastModified: z.string().optional(),
     order: z.number().int().nonnegative(),
   }),
 });

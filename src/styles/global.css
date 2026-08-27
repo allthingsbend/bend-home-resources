@@ -189,7 +189,7 @@ p { margin: 0 0 1rem; }
 .prose section { scroll-margin-top: 105px; }
 .prose section:first-child h2 { margin-top: 0; }
 .prose p, .prose li { font-size: 1.02rem; }
-.toc-card { padding: 1.15rem; }
+.toc-card { padding: 1.15rem; max-height: calc(100vh - 120px); overflow-y: auto; }
 .source-list { margin-top: 3.25rem; padding-top: .5rem; border-top: 1px solid var(--line); }
 .source-list a { word-break: break-word; }
 .related-band { border-top: 1px solid var(--line); background: #f2f0e9; }
@@ -222,6 +222,46 @@ p { margin: 0 0 1rem; }
 .footer-bottom { margin-top: 2.5rem; }
 .crumb-separator { padding: 0 .35rem; color: #8a9691; }
 
+/* Long-form comparison guides */
+.prose .agent-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+.prose .agent-guide-card {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.15rem;
+  box-shadow: 0 10px 28px rgba(23, 49, 42, .06);
+}
+.prose .agent-guide-card strong {
+  display: block;
+  color: var(--forest);
+  font-size: 1.05rem;
+  margin-bottom: .45rem;
+}
+.prose .agent-guide-card span { color: var(--muted); }
+.prose .checklist-box {
+  background: #edf1ee;
+  border: 1px solid #cdd8d2;
+  border-radius: 18px;
+  padding: 1.2rem 1.3rem;
+  margin: 1.5rem 0;
+}
+.prose .checklist-box strong { display: block; margin-bottom: .45rem; }
+.prose blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.2rem;
+  border-left: 4px solid var(--forest-2);
+  background: #edf1ee;
+  border-radius: 0 14px 14px 0;
+  color: var(--ink);
+}
+.prose blockquote p:last-child { margin-bottom: 0; }
+.prose table strong { color: var(--forest); }
+
 @media (max-width: 1050px) {
   .nav { display: none; }
   .mobile-nav { display: block; }
@@ -235,4 +275,6 @@ p { margin: 0 0 1rem; }
   .data-callout { grid-template-columns: 1fr; padding: 1.35rem; }
   .footer-grid-wide { grid-template-columns: 1fr; }
   .hero-stat { grid-template-columns: 72px 1fr; }
+  .prose .agent-guide-grid { grid-template-columns: 1fr; }
+  .toc-card { max-height: none; }
 }
